@@ -44,8 +44,18 @@ export default automation(
 
     slack.sendMessage({
       conversation: parameters.reviewConversationId,
-      text: t`${digest.count} open Krisp meeting action items. Showing up to 200:\n${digest.lines.transform((lines) => lines.join("\n"))}\n${digest.moreAvailable.transform((more) => (more ? "More items are available in Krisp." : "This is the full returned list."))}`,
+      text: t`${digest.count} open Krisp meeting action items. Showing up to 200:\n${digest.lines.transform((lines) => lines.join("\n"))}\n${digest.moreAvailable.transform((more) => (more ? "More items are available in Krisp." : "This is the full returned list."))}`.transform(
+        escapeSlackText,
+      ),
       unfurlLinks: false,
     })
   },
 )
+
+/** Keeps provider text from becoming Slack mentions or control markup. */
+function escapeSlackText(text: string) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+}
